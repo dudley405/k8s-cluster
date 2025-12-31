@@ -3,6 +3,9 @@ kind: Application
 metadata:
   name: prometheus
   namespace: argocd
+  finalizers:
+    # The default behaviour is foreground cascading deletion
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
@@ -10,8 +13,10 @@ spec:
     repoURL: https://prometheus-community.github.io/helm-charts
     targetRevision: 27.52.0
     helm:
-      valueFiles:
-        - values.yaml
+      valuesObject:
+        server:
+          service:
+            type: NodePort
       ignoreMissingValueFiles: true
   destination:
     server: https://kubernetes.default.svc

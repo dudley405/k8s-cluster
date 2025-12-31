@@ -3,6 +3,9 @@ kind: Application
 metadata:
   name: grafana
   namespace: argocd
+  finalizers:
+    # The default behaviour is foreground cascading deletion
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
@@ -10,9 +13,13 @@ spec:
     repoURL: https://grafana.github.io/helm-charts
     targetRevision: 10.4.2
     helm:
-      valueFiles:
-        - values.yaml
-      ignoreMissingValueFiles: true
+      valuesObject:
+        service:
+          type: NodePort
+        persistence:
+          enabled: true
+        initChownData:
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
