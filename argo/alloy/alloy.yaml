@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: alloy
+  namespace: argocd
+  finalizers:
+    # The default behaviour is foreground cascading deletion
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    chart: alloy
+    repoURL: https://grafana.github.io/helm-charts
+    targetRevision: 1.5.1
+    helm:
+      valuesObject:
+        alloy:
+          configMap:
+            create: false
+            name: alloy-config
+            key: config.alloy
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      enabled: true
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true

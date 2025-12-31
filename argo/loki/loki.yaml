@@ -3,15 +3,12 @@ kind: Application
 metadata:
   name: loki
   namespace: argocd
-  finalizers:
-    # The default behaviour is foreground cascading deletion
-    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
     chart: loki
     repoURL: https://grafana.github.io/helm-charts
-    targetRevision: 3.0.1
+    targetRevision: "6.49.0"
     helm:
       valuesObject:
         loki:
@@ -35,13 +32,12 @@ spec:
             enable_api: true
 
         minio:
-          enabled: false
+          enabled: true
 
         deploymentMode: SingleBinary
 
         singleBinary:
           replicas: 1
-
 
         # Zero out replica counts of other deployment modes
         backend:
